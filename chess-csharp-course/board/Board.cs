@@ -25,10 +25,17 @@ namespace board
 
         public void InsertPiece(Piece piece, Position pos)
         {
-            if (IsAValidPosition(pos) && PieceAt(pos) == null)
+            if (IsAValidPosition(pos))
             {
-                _pieces[pos.Row, pos.Column] = piece;
-                piece.Position = pos;
+                if (PieceAt(pos) == null)
+                {
+                    _pieces[pos.Row, pos.Column] = piece;
+                    piece.Position = pos;
+                }
+                else
+                {
+                    throw new BoardException("There is already a piece in that position!");
+                }
             }
             else
             {

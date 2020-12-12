@@ -1,6 +1,6 @@
 ﻿using board;
 
-namespace chess
+namespace chess.pieces
 {
     class Bishop : Piece
     {
