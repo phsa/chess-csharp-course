@@ -10,5 +10,11 @@ namespace board
         public int NumOfMovements { get; protected set; }
         public Board Board { get; protected set; }
 
+        public Piece(Board board, Color color)
+        {
+            Color = color;
+            Board = board;
+            NumOfMovements = 0;
+        }
     }
 }
