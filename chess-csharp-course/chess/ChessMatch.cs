@@ -23,6 +23,7 @@ namespace chess
         {
             Board.InsertPiece(new King(Board, Color.White), new ChessPosition('d', 1).ToPosition());
             Board.InsertPiece(new Queen(Board, Color.White), new ChessPosition('e', 1).ToPosition());
+            Board.InsertPiece(new Pawn(Board, Color.Black), new ChessPosition('b', 3).ToPosition());
             Board.InsertPiece(new Queen(Board, Color.Black), new ChessPosition('d', 8).ToPosition());
             Board.InsertPiece(new King(Board, Color.Black), new ChessPosition('e', 8).ToPosition());
         }
@@ -30,7 +31,7 @@ namespace chess
         public void MovePiece(Position source, Position target)
         {
             Piece movedPiece = Board.RemovePiece(source);
-            movedPiece.increaseMovementCount();
+            movedPiece.IncreaseMovementCount();
             Piece capturedPiece = Board.RemovePiece(source);
             Board.InsertPiece(movedPiece, target);
         }

@@ -20,13 +20,21 @@ namespace chess_csharp_course
 
                     Console.WriteLine();
                     Console.Write("Source: ");
-                    Position sourcePos = ReadChessPosition().ToPosition();
+
+                    ChessPosition sourceChessPos = ReadChessPosition();
+
+                    bool[,] possible = match.Board.PieceAt(sourceChessPos.ToPosition()).PossibleMovements();
+                    Console.Clear();
+                    Screen.PrintBoard(match.Board, possible);
+
+                    Console.WriteLine();
+                    Console.WriteLine("Source: " + sourceChessPos);
+
                     Console.Write("Target: ");
-                    Position targetPos = ReadChessPosition().ToPosition();
+                    ChessPosition targetChessPos = ReadChessPosition();
 
-                    match.MovePiece(sourcePos, targetPos);
+                    match.MovePiece(sourceChessPos.ToPosition(), targetChessPos.ToPosition());
                 }
-
             }
             catch (BoardException e)
             {

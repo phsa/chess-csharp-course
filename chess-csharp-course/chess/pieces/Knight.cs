@@ -8,6 +8,10 @@ namespace chess.pieces
         {
         }
 
+        public override bool[,] PossibleMovements()
+        {
+            throw new System.NotImplementedException();
+        }
 
         public override string ToString()
         {

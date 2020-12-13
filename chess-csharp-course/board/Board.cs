@@ -1,5 +1,4 @@
 ﻿using board.exceptions;
-using System;
 
 namespace board
 {
@@ -51,7 +50,7 @@ namespace board
             return p;
         }
 
-        private bool IsAValidPosition(Position pos)
+        public bool IsAValidPosition(Position pos)
         {
             return 0 <= pos.Row && pos.Row < Rows && 0 <= pos.Column && pos.Column < Columns;
         }

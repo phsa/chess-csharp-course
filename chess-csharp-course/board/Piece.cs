@@ -2,7 +2,7 @@
 
 namespace board
 {
-    class Piece
+    abstract class Piece
     {
 
         public Position Position { get; set; }
@@ -17,9 +17,11 @@ namespace board
             NumOfMovements = 0;
         }
 
-        public void increaseMovementCount()
+        public void IncreaseMovementCount()
         {
             NumOfMovements++;
         }
+
+        public abstract bool[,] PossibleMovements();
     }
 }

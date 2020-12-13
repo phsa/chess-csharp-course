@@ -14,6 +14,10 @@ namespace chess
             Row = row;
         }
 
+        public ChessPosition(Position position)
+        {
+        }
+
         public Position ToPosition()
         {
             return new Position(8 - Row, Column - 'a');

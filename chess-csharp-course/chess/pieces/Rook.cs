@@ -8,6 +8,92 @@ namespace chess.pieces
         {
         }
 
+        private bool ItIsAPossibleMove(Position pos)
+        {
+            try
+            {
+                Piece p = Board.PieceAt(pos);
+                return p == null || Color != p.Color;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override bool[,] PossibleMovements()
+        {
+            bool[,] moves = new bool[Board.Rows, Board.Columns];
+            Position pos = new Position(Position.Row - 1, Position.Column);
+
+            //UP
+            while (ItIsAPossibleMove(pos))
+            {
+                moves[pos.Row, pos.Column] = true;
+                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
+                {
+                    break;
+                }
+                pos.Row--;
+            }
+
+            //RIGHT
+            pos.Update(Position.Row, Position.Column + 1);
+            while (ItIsAPossibleMove(pos))
+            {
+                moves[pos.Row, pos.Column] = true;
+                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
+                {
+                    break;
+                }
+                pos.Column++;
+            }
+
+            //DOWN
+            pos.Update(Position.Row + 1, Position.Column);
+            while (ItIsAPossibleMove(pos))
+            {
+                moves[pos.Row, pos.Column] = true;
+                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
+                {
+                    break;
+                }
+                pos.Row++;
+            }
+
+            //LEFT
+            pos.Update(Position.Row, Position.Column - 1);
+            while (ItIsAPossibleMove(pos))
+            {
+                moves[pos.Row, pos.Column] = true;
+                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
+                {
+                    break;
+                }
+                pos.Column--;
+            }
+
+            // TEST
+            for (int i = 0; i < Board.Rows; i++)
+            {
+                for (int j = 0; j < Board.Columns; j++)
+                {
+                    if (moves[i, j])
+                    {
+                        System.Console.Write("X");
+                    }
+                    else
+                    {
+                        System.Console.Write("-");
+                    }
+                }
+                System.Console.WriteLine();
+            }
+            //TEST
+
+            return moves;
+        }
+
         public override string ToString()
         {
             return "R";
