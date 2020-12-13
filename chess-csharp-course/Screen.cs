@@ -32,7 +32,7 @@ namespace chess_csharp_course
 
         private static void printPiece(Piece piece)
         {
-            if (piece.Color == Color.Branca)
+            if (piece.Color == Color.White)
             {
                 Console.Write(piece);
             }

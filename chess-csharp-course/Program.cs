@@ -1,6 +1,7 @@
 ﻿using System;
 using board;
-using chess.pieces;
+using board.exceptions;
+using chess;
 
 namespace chess_csharp_course
 {
@@ -8,11 +9,38 @@ namespace chess_csharp_course
     {
         static void Main(string[] args)
         {
-            Board board = new Board(8, 8);
-            board.InsertPiece(new Rook(board, Color.Branca), new Position(0, 0));
-            board.InsertPiece(new Rook(board, Color.Preta), new Position(1, 3));
-            Screen.PrintBoard(board);
+            try
+            {
+                ChessMatch match = new ChessMatch();
+
+                while (!match.Finished())
+                {
+                    Console.Clear();
+                    Screen.PrintBoard(match.Board);
+
+                    Console.WriteLine();
+                    Console.Write("Source: ");
+                    Position sourcePos = ReadChessPosition().ToPosition();
+                    Console.Write("Target: ");
+                    Position targetPos = ReadChessPosition().ToPosition();
+
+                    match.MovePiece(sourcePos, targetPos);
+                }
+
+            }
+            catch (BoardException e)
+            {
+                Console.WriteLine("Board Error: " + e.Message);
+            }
             Console.ReadLine();
+        }
+
+        private static ChessPosition ReadChessPosition()
+        {
+            string s = Console.ReadLine();
+            char column = s[0];
+            int row = int.Parse(s[1].ToString());
+            return new ChessPosition(column, row);
         }
     }
 }

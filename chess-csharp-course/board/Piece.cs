@@ -16,5 +16,10 @@ namespace board
             Board = board;
             NumOfMovements = 0;
         }
+
+        public void increaseMovementCount()
+        {
+            NumOfMovements++;
+        }
     }
 }
