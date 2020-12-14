@@ -14,6 +14,7 @@ namespace chess
         public Board Board { get; private set; }
         public Color CurrentPlayer { get; private set; }
         public int Turn { get; private set; }
+        public bool InCheck { get; private set; }
 
         public ChessMatch()
         {
@@ -96,7 +97,7 @@ namespace chess
         public HashSet<Piece> PiecesInPlay(Color color)
         {
             HashSet<Piece> aux = new HashSet<Piece>();
-            foreach (Piece piece in _capturedPieces)
+            foreach (Piece piece in _pieces)
             {
                 if (piece.Color == color)
                 {
@@ -105,11 +106,6 @@ namespace chess
             }
             aux.ExceptWith(CapturedPieces(color));
             return aux;
-        }
-
-        public bool Finished()
-        {
-            return false;
         }
 
         public void InsertNewPiece(char column, int row, Piece newPiece)
@@ -121,12 +117,21 @@ namespace chess
 
         public void PerformMove(Position source, Position target)
         {
-            MovePiece(source, target);
+            Piece capturedPiece = MovePiece(source, target);
+
+            if (IsInCheck(CurrentPlayer))
+            {
+                UndoMove(source, target, capturedPiece);
+                throw new BoardException("You can not put yourself in check!");
+            }
+
+            InCheck = IsInCheck(Oponente(CurrentPlayer));
+
             Turn++;
             ChangeCurrentPlayer();
         }
 
-        public void MovePiece(Position source, Position target)
+        public Piece MovePiece(Position source, Position target)
         {
             Piece movedPiece = Board.RemovePiece(source);
             movedPiece.IncreaseMovementCount();
@@ -136,18 +141,56 @@ namespace chess
             {
                 _capturedPieces.Add(capturedPiece);
             }
+            return capturedPiece;
+        }
+
+        public void UndoMove(Position source, Position target, Piece capturedPiece)
+        {
+            Piece p = Board.RemovePiece(target);
+            p.DecreaseMovementCount();
+            if (capturedPiece != null)
+            {
+                Board.InsertPiece(capturedPiece, target);
+                _capturedPieces.Remove(capturedPiece);
+            }
+            Board.InsertPiece(p, source);
         }
 
         private void ChangeCurrentPlayer()
         {
-            if (CurrentPlayer == Color.White)
+            CurrentPlayer = Oponente(CurrentPlayer);
+        }
+
+        private Color Oponente(Color color)
+        {
+            return (color == Color.White) ? Color.Black : Color.White;
+        }
+
+        public Piece King(Color color)
+        {
+            foreach (Piece piece in PiecesInPlay(color))
             {
-                CurrentPlayer = Color.Black;
+                if (piece is King)
+                {
+                    return piece;
+                }
             }
-            else
+            throw new BoardException("There is no " + color + " king on board!");
+        }
+
+        public bool IsInCheck(Color color)
+        {
+            Piece king = King(color);
+
+            foreach (Piece piece in PiecesInPlay(Oponente(color)))
             {
-                CurrentPlayer = Color.White;
+                bool[,] available = piece.AvailableMovements();
+                if (available[king.Position.Row, king.Position.Column])
+                {
+                    return true;
+                }
             }
+            return false;
         }
 
         public void ValidateSourcePosition(Position pos)
@@ -173,6 +216,11 @@ namespace chess
             {
                 throw new BoardException("Invalid target position!");
             }
+        }
+
+        public bool Finished()
+        {
+            return false;
         }
     }
 }

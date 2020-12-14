@@ -22,6 +22,11 @@ namespace board
             NumOfMovements++;
         }
 
+        public void DecreaseMovementCount()
+        {
+            NumOfMovements--;
+        }
+
         public bool AreThereAvailableMovements()
         {
             bool[,] possibilities = AvailableMovements();

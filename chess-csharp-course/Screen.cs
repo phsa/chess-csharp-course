@@ -17,7 +17,10 @@ namespace chess_csharp_course
             Console.WriteLine();
             Console.WriteLine("Turn: " + match.Turn);
             Console.WriteLine("Waiting the move: " + match.CurrentPlayer);
-
+            if (match.InCheck)
+            {
+                Console.WriteLine("CHECK!");
+            }
         }
 
         private static void PrintCapturedPieces(ChessMatch match)
