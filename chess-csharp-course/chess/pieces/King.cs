@@ -11,59 +11,60 @@ namespace chess.pieces
         public override bool[,] AvailableMovements()
         {
             bool[,] moves = new bool[Board.Rows, Board.Columns];
-            Position pos = new Position(Position.Row - 1, Position.Column);
+            Position pos = new Position(0, 0);
 
             // UP
-            if (ItIsAPossibleMove(pos))
+            pos.Update(Position.Row - 1, Position.Column);
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
 
             // RIGHT-UP
             pos.Update(Position.Row - 1, Position.Column + 1);
-            if (ItIsAPossibleMove(pos))
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
 
             // RIGHT
             pos.Update(Position.Row, Position.Column + 1);
-            if (ItIsAPossibleMove(pos))
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
 
             // RIGHT-DOWN
             pos.Update(Position.Row + 1, Position.Column + 1);
-            if (ItIsAPossibleMove(pos))
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
 
             // DOWN
             pos.Update(Position.Row + 1, Position.Column);
-            if (ItIsAPossibleMove(pos))
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
 
             // LEFT-DOWN
             pos.Update(Position.Row + 1, Position.Column - 1);
-            if (ItIsAPossibleMove(pos))
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
 
             // LEFT
             pos.Update(Position.Row, Position.Column - 1);
-            if (ItIsAPossibleMove(pos))
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
 
             // LEFT-UP
             pos.Update(Position.Row - 1, Position.Column - 1);
-            if (ItIsAPossibleMove(pos))
+            if (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
             }
@@ -71,7 +72,7 @@ namespace chess.pieces
             return moves;
         }
 
-        private bool ItIsAPossibleMove(Position pos)
+        private bool CanMoveTo(Position pos)
         {
             try
             {

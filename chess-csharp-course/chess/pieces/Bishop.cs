@@ -11,10 +11,11 @@ namespace chess.pieces
         public override bool[,] AvailableMovements()
         {
             bool[,] moves = new bool[Board.Rows, Board.Columns];
+            Position pos = new Position(0, 0);
 
             // RIGHT-UP
-            Position pos = new Position(Position.Row - 1, Position.Column + 1);
-            while (ItIsAPossibleMove(pos))
+            pos.Update(Position.Row - 1, Position.Column + 1);
+            while (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
                 if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
@@ -27,7 +28,7 @@ namespace chess.pieces
 
             // RIGHT-DOWN
             pos.Update(Position.Row + 1, Position.Column + 1);
-            while (ItIsAPossibleMove(pos))
+            while (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
                 if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
@@ -40,7 +41,7 @@ namespace chess.pieces
 
             // LEFT-DOWN
             pos.Update(Position.Row + 1, Position.Column - 1);
-            while (ItIsAPossibleMove(pos))
+            while (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
                 if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
@@ -53,7 +54,7 @@ namespace chess.pieces
 
             // LEFT-UP
             pos.Update(Position.Row - 1, Position.Column - 1);
-            while (ItIsAPossibleMove(pos))
+            while (CanMoveTo(pos))
             {
                 moves[pos.Row, pos.Column] = true;
                 if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
@@ -67,7 +68,7 @@ namespace chess.pieces
             return moves;
         }
 
-        private bool ItIsAPossibleMove(Position pos)
+        private bool CanMoveTo(Position pos)
         {
             try
             {
