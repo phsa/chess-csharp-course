@@ -21,8 +21,8 @@ namespace chess_csharp_course
                         Screen.PrintBoard(match.Board);
 
                         Console.WriteLine();
-                        Console.WriteLine("Round: " + match.Round);
-                        Console.WriteLine("Waiting a move: " + match.CurrentPlayer);
+                        Console.WriteLine("Turn: " + match.Turn);
+                        Console.WriteLine("Waiting the move: " + match.CurrentPlayer);
 
                         Console.WriteLine();
                         Console.Write("Source: ");
