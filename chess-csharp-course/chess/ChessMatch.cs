@@ -34,7 +34,7 @@ namespace chess
             InsertNewPiece('b', 1, new Knight(Board, Color.White));
             InsertNewPiece('c', 1, new Bishop(Board, Color.White));
             InsertNewPiece('d', 1, new Queen(Board, Color.White));
-            InsertNewPiece('e', 1, new King(Board, Color.White));
+            InsertNewPiece('e', 1, new King(Board, Color.White, this));
             InsertNewPiece('f', 1, new Bishop(Board, Color.White));
             InsertNewPiece('g', 1, new Knight(Board, Color.White));
             InsertNewPiece('h', 1, new Rook(Board, Color.White));
@@ -51,7 +51,7 @@ namespace chess
             InsertNewPiece('b', 8, new Knight(Board, Color.Black));
             InsertNewPiece('c', 8, new Bishop(Board, Color.Black));
             InsertNewPiece('d', 8, new Queen(Board, Color.Black));
-            InsertNewPiece('e', 8, new King(Board, Color.Black));
+            InsertNewPiece('e', 8, new King(Board, Color.Black, this));
             InsertNewPiece('f', 8, new Bishop(Board, Color.Black));
             InsertNewPiece('g', 8, new Knight(Board, Color.Black));
             InsertNewPiece('h', 8, new Rook(Board, Color.Black));
@@ -63,32 +63,6 @@ namespace chess
             InsertNewPiece('f', 7, new Pawn(Board, Color.Black));
             InsertNewPiece('g', 7, new Pawn(Board, Color.Black));
             InsertNewPiece('h', 7, new Pawn(Board, Color.Black));
-
-
-            //InsertNewPiece('c', 8, new Rook(Board, Color.Black));
-            //InsertNewPiece('d', 8, new King(Board, Color.Black));
-            //InsertNewPiece('e', 8, new Rook(Board, Color.Black));
-            //InsertNewPiece('c', 7, new Rook(Board, Color.Black));
-            //InsertNewPiece('d', 7, new Rook(Board, Color.Black));
-            //InsertNewPiece('e', 7, new Rook(Board, Color.Black));
-
-
-            //InsertNewPiece('c', 1, new Rook(Board, Color.White));
-            //InsertNewPiece('d', 1, new King(Board, Color.White));
-            //InsertNewPiece('e', 1, new Rook(Board, Color.White));
-            //InsertNewPiece('c', 2, new Rook(Board, Color.White));
-            //InsertNewPiece('d', 2, new Rook(Board, Color.White));
-            //InsertNewPiece('e', 2, new Rook(Board, Color.White));
-
-
-            //InsertNewPiece('c', 1, new Rook(Board, Color.White));
-            //InsertNewPiece('d', 1, new King(Board, Color.White));
-            //InsertNewPiece('h', 7, new Rook(Board, Color.White));
-
-            //InsertNewPiece('a', 8, new King(Board, Color.Black));
-            //InsertNewPiece('b', 8, new Rook(Board, Color.Black));
-
-
         }
 
         public void InsertNewPiece(char column, int row, Piece newPiece)
@@ -158,19 +132,62 @@ namespace chess
             {
                 _capturedPieces.Add(capturedPiece);
             }
+
+            // #SPECIALMOVE: CASTLING SHORT
+            if (movedPiece is King && target.Column == source.Column + 2)
+            {
+                Position originalRookPos = new Position(source.Row, source.Column + 3);
+                Position newRookPos = new Position(source.Row, source.Column + 1);
+                Piece rook = Board.RemovePiece(originalRookPos);
+                rook.IncreaseMovementCount();
+                Board.InsertPiece(rook, newRookPos);
+            }
+
+            // #SPECIALMOVE: CASTLING LONG
+            if (movedPiece is King && target.Column == source.Column - 2)
+            {
+                Position originalRookPos = new Position(source.Row, source.Column - 4);
+                Position newRookPos = new Position(source.Row, source.Column - 1);
+                Piece rook = Board.RemovePiece(originalRookPos);
+                rook.IncreaseMovementCount();
+                Board.InsertPiece(rook, newRookPos);
+            }
+
             return capturedPiece;
         }
 
         public void UndoMove(Position source, Position target, Piece capturedPiece)
         {
-            Piece p = Board.RemovePiece(target);
-            p.DecreaseMovementCount();
+            Piece restoredPiece = Board.RemovePiece(target);
+            restoredPiece.DecreaseMovementCount();
             if (capturedPiece != null)
             {
                 Board.InsertPiece(capturedPiece, target);
                 _capturedPieces.Remove(capturedPiece);
             }
-            Board.InsertPiece(p, source);
+            Board.InsertPiece(restoredPiece, source);
+
+
+
+            // #SPECIALMOVE: CASTLING SHORT
+            if (restoredPiece is King && target.Column == source.Column + 2)
+            {
+                Position originalRookPos = new Position(source.Row, restoredPiece.Position.Column + 3);
+                Position newRookPos = new Position(source.Row, restoredPiece.Position.Column + 1);
+                Piece rook = Board.RemovePiece(newRookPos);
+                rook.DecreaseMovementCount();
+                Board.InsertPiece(rook, originalRookPos);
+            }
+
+            // #SPECIALMOVE: CASTLING LONG
+            if (restoredPiece is King && target.Column == source.Column - 2)
+            {
+                Position originalRookPos = new Position(source.Row, restoredPiece.Position.Column - 4);
+                Position newRookPos = new Position(source.Row, restoredPiece.Position.Column - 1);
+                Piece rook = Board.RemovePiece(newRookPos);
+                rook.IncreaseMovementCount();
+                Board.InsertPiece(rook, originalRookPos);
+            }
         }
 
 

@@ -95,7 +95,7 @@ namespace chess.pieces
             try
             {
                 Piece p = Board.PieceAt(pos);
-                return p != null || Color != p.Color;
+                return p != null && Color != p.Color;
             }
             catch
             {

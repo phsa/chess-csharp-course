@@ -1,11 +1,16 @@
 ﻿using board;
+using board.exceptions;
 
 namespace chess.pieces
 {
     class King : Piece
     {
-        public King(Board board, Color color) : base(board, color)
+
+        private ChessMatch _match;
+
+        public King(Board board, Color color, ChessMatch match) : base(board, color)
         {
+            _match = match;
         }
 
         public override bool[,] AvailableMovements()
@@ -69,6 +74,40 @@ namespace chess.pieces
                 moves[pos.Row, pos.Column] = true;
             }
 
+
+            // #SPECIALMOVE: CASTLING
+            if (NumOfMovements == 0 && !_match.InCheck)
+            {
+                // Castling Short
+                Position castlingShortRookPos = new Position(Position.Row, Position.Column + 3);
+                if (IsRookAbleForCastling(castlingShortRookPos))
+                {
+                    Position rightNeighbor1 = new Position(Position.Row, Position.Column + 1);
+                    Position rightNeighbor2 = new Position(Position.Row, Position.Column + 2);
+
+                    if (Board.PieceAt(rightNeighbor1) == null && Board.PieceAt(rightNeighbor2) == null)
+                    {
+                        moves[Position.Row, Position.Column + 2] = true;
+                    }
+
+                }
+
+                // Castling Long
+                Position castlingLongRookPos = new Position(Position.Row, Position.Column - 4);
+                if (IsRookAbleForCastling(castlingLongRookPos))
+                {
+                    Position leftNeighbor1 = new Position(Position.Row, Position.Column - 1);
+                    Position leftNeighbor2 = new Position(Position.Row, Position.Column - 2);
+                    Position leftNeighbor3 = new Position(Position.Row, Position.Column - 3);
+
+                    if (Board.PieceAt(leftNeighbor1) == null && Board.PieceAt(leftNeighbor2) == null && Board.PieceAt(leftNeighbor3) == null)
+                    {
+                        moves[Position.Row, Position.Column - 2] = true;
+                    }
+
+                }
+            }
+
             return moves;
         }
 
@@ -80,6 +119,19 @@ namespace chess.pieces
                 return p == null || Color != p.Color;
             }
             catch
+            {
+                return false;
+            }
+        }
+
+        private bool IsRookAbleForCastling(Position pos)
+        {
+            try
+            {
+                Piece p = Board.PieceAt(pos);
+                return p != null && p is Rook && p.Color == Color && p.NumOfMovements == 0;
+            }
+            catch (BoardException)
             {
                 return false;
             }
