@@ -13,12 +13,11 @@ namespace chess_csharp_course
             {
                 ChessMatch match = new ChessMatch();
 
-                while (!match.Finished())
+                while (!match.Finished)
                 {
                     try
                     {
                         Console.Clear();
-
                         Screen.PrintMatch(match);
 
                         Console.WriteLine();
@@ -45,6 +44,9 @@ namespace chess_csharp_course
                         Console.ReadLine();
                     }
                 }
+
+                Console.Clear();
+                Screen.PrintMatch(match);
             }
             catch (BoardException e)
             {

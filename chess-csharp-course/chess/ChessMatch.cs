@@ -15,6 +15,7 @@ namespace chess
         public Color CurrentPlayer { get; private set; }
         public int Turn { get; private set; }
         public bool InCheck { get; private set; }
+        public bool Finished { get; private set; }
 
         public ChessMatch()
         {
@@ -64,20 +65,36 @@ namespace chess
             //InsertNewPiece('h', 7, new Pawn(Board, Color.Black));
 
 
-            InsertNewPiece('c', 8, new Rook(Board, Color.Black));
-            InsertNewPiece('d', 8, new King(Board, Color.Black));
-            InsertNewPiece('e', 8, new Rook(Board, Color.Black));
-            InsertNewPiece('c', 7, new Rook(Board, Color.Black));
-            InsertNewPiece('d', 7, new Rook(Board, Color.Black));
-            InsertNewPiece('e', 7, new Rook(Board, Color.Black));
+            //InsertNewPiece('c', 8, new Rook(Board, Color.Black));
+            //InsertNewPiece('d', 8, new King(Board, Color.Black));
+            //InsertNewPiece('e', 8, new Rook(Board, Color.Black));
+            //InsertNewPiece('c', 7, new Rook(Board, Color.Black));
+            //InsertNewPiece('d', 7, new Rook(Board, Color.Black));
+            //InsertNewPiece('e', 7, new Rook(Board, Color.Black));
+
+
+            //InsertNewPiece('c', 1, new Rook(Board, Color.White));
+            //InsertNewPiece('d', 1, new King(Board, Color.White));
+            //InsertNewPiece('e', 1, new Rook(Board, Color.White));
+            //InsertNewPiece('c', 2, new Rook(Board, Color.White));
+            //InsertNewPiece('d', 2, new Rook(Board, Color.White));
+            //InsertNewPiece('e', 2, new Rook(Board, Color.White));
 
 
             InsertNewPiece('c', 1, new Rook(Board, Color.White));
             InsertNewPiece('d', 1, new King(Board, Color.White));
-            InsertNewPiece('e', 1, new Rook(Board, Color.White));
-            InsertNewPiece('c', 2, new Rook(Board, Color.White));
-            InsertNewPiece('d', 2, new Rook(Board, Color.White));
-            InsertNewPiece('e', 2, new Rook(Board, Color.White));
+            InsertNewPiece('h', 7, new Rook(Board, Color.White));
+
+            InsertNewPiece('a', 8, new King(Board, Color.Black));
+            InsertNewPiece('b', 8, new Rook(Board, Color.Black));
+
+
+        }
+
+        public void InsertNewPiece(char column, int row, Piece newPiece)
+        {
+            Board.InsertPiece(newPiece, new ChessPosition(column, row).ToPosition());
+            _pieces.Add(newPiece);
 
         }
 
@@ -108,13 +125,6 @@ namespace chess
             return aux;
         }
 
-        public void InsertNewPiece(char column, int row, Piece newPiece)
-        {
-            Board.InsertPiece(newPiece, new ChessPosition(column, row).ToPosition());
-            _pieces.Add(newPiece);
-
-        }
-
         public void PerformMove(Position source, Position target)
         {
             Piece capturedPiece = MovePiece(source, target);
@@ -127,8 +137,15 @@ namespace chess
 
             InCheck = IsInCheck(Oponente(CurrentPlayer));
 
-            Turn++;
-            ChangeCurrentPlayer();
+            if (Checkmating(Oponente(CurrentPlayer))) {
+                Finished = true;
+            }
+            else
+            {
+                Turn++;
+                ChangeCurrentPlayer();
+            }
+
         }
 
         public Piece MovePiece(Position source, Position target)
@@ -156,27 +173,6 @@ namespace chess
             Board.InsertPiece(p, source);
         }
 
-        private void ChangeCurrentPlayer()
-        {
-            CurrentPlayer = Oponente(CurrentPlayer);
-        }
-
-        private Color Oponente(Color color)
-        {
-            return (color == Color.White) ? Color.Black : Color.White;
-        }
-
-        public Piece King(Color color)
-        {
-            foreach (Piece piece in PiecesInPlay(color))
-            {
-                if (piece is King)
-                {
-                    return piece;
-                }
-            }
-            throw new BoardException("There is no " + color + " king on board!");
-        }
 
         public bool IsInCheck(Color color)
         {
@@ -192,6 +188,63 @@ namespace chess
             }
             return false;
         }
+
+        public Piece King(Color color)
+        {
+            foreach (Piece piece in PiecesInPlay(color))
+            {
+                if (piece is King)
+                {
+                    return piece;
+                }
+            }
+            throw new BoardException("There is no " + color + " king on board!");
+        }
+
+
+        public bool Checkmating(Color color)
+        {
+            if (!IsInCheck(color))
+            {
+                return false;
+            }
+
+            foreach (Piece piece in PiecesInPlay(color))
+            {
+                bool[,] available = piece.AvailableMovements();
+                for (int i = 0; i < Board.Rows; i++)
+                {
+                    for (int j = 0; j < Board.Columns; j++)
+                    {
+                        if (available[i, j])
+                        {
+                            Position source = piece.Position;
+                            Position target = new Position(i, j);
+                            Piece capturedPiece = MovePiece(source, target);
+                            bool stillInCheck = IsInCheck(color);
+                            UndoMove(source, target, capturedPiece);
+                            if (!stillInCheck)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private void ChangeCurrentPlayer()
+        {
+            CurrentPlayer = Oponente(CurrentPlayer);
+        }
+
+        private Color Oponente(Color color)
+        {
+            return (color == Color.White) ? Color.Black : Color.White;
+        }
+
 
         public void ValidateSourcePosition(Position pos)
         {
@@ -216,11 +269,6 @@ namespace chess
             {
                 throw new BoardException("Invalid target position!");
             }
-        }
-
-        public bool Finished()
-        {
-            return false;
         }
     }
 }

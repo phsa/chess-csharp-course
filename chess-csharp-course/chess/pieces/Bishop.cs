@@ -12,21 +12,8 @@ namespace chess.pieces
         {
             bool[,] moves = new bool[Board.Rows, Board.Columns];
 
-            // LEFT-UP
-            Position pos = new Position(Position.Row - 1, Position.Column - 1);
-            while (ItIsAPossibleMove(pos))
-            {
-                moves[pos.Row, pos.Column] = true;
-                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
-                {
-                    break;
-                }
-                pos.Row--;
-                pos.Column--;
-            }
-
             // RIGHT-UP
-            pos.Update(Position.Row - 1, Position.Column + 1);
+            Position pos = new Position(Position.Row - 1, Position.Column + 1);
             while (ItIsAPossibleMove(pos))
             {
                 moves[pos.Row, pos.Column] = true;
@@ -35,19 +22,6 @@ namespace chess.pieces
                     break;
                 }
                 pos.Row--;
-                pos.Column++;
-            }
-
-            // LEFT-DOWN
-            pos.Update(Position.Row + 1, Position.Column - 1);
-            while (ItIsAPossibleMove(pos))
-            {
-                moves[pos.Row, pos.Column] = true;
-                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
-                {
-                    break;
-                }
-                pos.Row++;
                 pos.Column++;
             }
 
@@ -64,25 +38,31 @@ namespace chess.pieces
                 pos.Column++;
             }
 
-
-            // TEST
-            for (int i = 0; i < Board.Rows; i++)
+            // LEFT-DOWN
+            pos.Update(Position.Row + 1, Position.Column - 1);
+            while (ItIsAPossibleMove(pos))
             {
-                for (int j = 0; j < Board.Columns; j++)
+                moves[pos.Row, pos.Column] = true;
+                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
                 {
-                    if (moves[i, j])
-                    {
-                        System.Console.Write("X");
-                    }
-                    else
-                    {
-                        System.Console.Write("-");
-                    }
+                    break;
                 }
-                System.Console.WriteLine();
+                pos.Row++;
+                pos.Column++;
             }
-            //TEST
 
+            // LEFT-UP
+            pos.Update(Position.Row - 1, Position.Column - 1);
+            while (ItIsAPossibleMove(pos))
+            {
+                moves[pos.Row, pos.Column] = true;
+                if (Board.PieceAt(pos) != null && Color != Board.PieceAt(pos).Color)
+                {
+                    break;
+                }
+                pos.Row--;
+                pos.Column--;
+            }
 
             return moves;
         }
