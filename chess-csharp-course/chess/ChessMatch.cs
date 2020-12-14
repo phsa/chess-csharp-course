@@ -1,4 +1,5 @@
 ﻿using board;
+using board.exceptions;
 using chess.pieces;
 
 namespace chess
@@ -6,15 +7,15 @@ namespace chess
     class ChessMatch
     {
 
-        private int _round;
-        private Color _currentPlayer;
         public Board Board { get; private set; }
+        public Color CurrentPlayer { get; private set; }
+        public int Round { get; private set; }
 
         public ChessMatch()
         {
             Board = new Board(8, 8);
-            _round = 1;
-            _currentPlayer = Color.White;
+            Round = 1;
+            CurrentPlayer = Color.White;
             InitialSetting();
         }
 
@@ -39,6 +40,50 @@ namespace chess
         public bool Finished()
         {
             return false;
+        }
+
+        public void PerformMove(Position source, Position target)
+        {
+            MovePiece(source, target);
+            Round++;
+            ChangeCurrentPlayer();
+        }
+
+        private void ChangeCurrentPlayer()
+        {
+            if (CurrentPlayer == Color.White)
+            {
+                CurrentPlayer = Color.Black;
+            }
+            else
+            {
+                CurrentPlayer = Color.White;
+            }
+        }
+
+        public void ValidateSourcePosition(Position pos)
+        {
+            Piece pieceAt = Board.PieceAt(pos);
+            if (pieceAt == null)
+            {
+                throw new BoardException("There is no piece at the selected source position!");
+            }
+            if (CurrentPlayer != pieceAt.Color)
+            {
+                throw new BoardException("The selected piece doesn't belongs to you!");
+            }
+            if (!pieceAt.AreThereAvailableMovements())
+            {
+                throw new BoardException("The selected piece has no movements available!");
+            }
+        }
+
+        public void ValidateTargetPosition(Position source, Position target)
+        {
+            if (!Board.PieceAt(source).CanMoveTo(target))
+            {
+                throw new BoardException("Invalid target position!");
+            }
         }
     }
 }

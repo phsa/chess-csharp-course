@@ -15,25 +15,38 @@ namespace chess_csharp_course
 
                 while (!match.Finished())
                 {
-                    Console.Clear();
-                    Screen.PrintBoard(match.Board);
+                    try
+                    {
+                        Console.Clear();
+                        Screen.PrintBoard(match.Board);
 
-                    Console.WriteLine();
-                    Console.Write("Source: ");
+                        Console.WriteLine();
+                        Console.WriteLine("Round: " + match.Round);
+                        Console.WriteLine("Waiting a move: " + match.CurrentPlayer);
 
-                    ChessPosition sourceChessPos = ReadChessPosition();
+                        Console.WriteLine();
+                        Console.Write("Source: ");
+                        Position sourcePos = ReadChessPosition().ToPosition();
 
-                    bool[,] possible = match.Board.PieceAt(sourceChessPos.ToPosition()).PossibleMovements();
-                    Console.Clear();
-                    Screen.PrintBoard(match.Board, possible);
+                        match.ValidateSourcePosition(sourcePos);
 
-                    Console.WriteLine();
-                    Console.WriteLine("Source: " + sourceChessPos);
+                        bool[,] possible = match.Board.PieceAt(sourcePos).AvailableMovements();
+                        Console.Clear();
+                        Screen.PrintBoard(match.Board, possible);
 
-                    Console.Write("Target: ");
-                    ChessPosition targetChessPos = ReadChessPosition();
+                        Console.WriteLine();
+                        Console.Write("Target: ");
+                        Position targetPos = ReadChessPosition().ToPosition();
 
-                    match.MovePiece(sourceChessPos.ToPosition(), targetChessPos.ToPosition());
+                        match.ValidateTargetPosition(sourcePos, targetPos);
+
+                        match.PerformMove(sourcePos, targetPos);
+                    }
+                    catch (BoardException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.ReadLine();
+                    }
                 }
             }
             catch (BoardException e)

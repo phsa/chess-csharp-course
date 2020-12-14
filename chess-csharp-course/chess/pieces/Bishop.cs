@@ -8,7 +8,7 @@ namespace chess.pieces
         {
         }
 
-        public override bool[,] PossibleMovements()
+        public override bool[,] AvailableMovements()
         {
             bool[,] moves = new bool[Board.Rows, Board.Columns];
 
