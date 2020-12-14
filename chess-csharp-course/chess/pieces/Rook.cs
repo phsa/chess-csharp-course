@@ -73,24 +73,6 @@ namespace chess.pieces
                 pos.Column--;
             }
 
-            // TEST
-            for (int i = 0; i < Board.Rows; i++)
-            {
-                for (int j = 0; j < Board.Columns; j++)
-                {
-                    if (moves[i, j])
-                    {
-                        System.Console.Write("X");
-                    }
-                    else
-                    {
-                        System.Console.Write("-");
-                    }
-                }
-                System.Console.WriteLine();
-            }
-            //TEST
-
             return moves;
         }
 

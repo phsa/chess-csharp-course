@@ -18,11 +18,8 @@ namespace chess_csharp_course
                     try
                     {
                         Console.Clear();
-                        Screen.PrintBoard(match.Board);
 
-                        Console.WriteLine();
-                        Console.WriteLine("Turn: " + match.Turn);
-                        Console.WriteLine("Waiting the move: " + match.CurrentPlayer);
+                        Screen.PrintMatch(match);
 
                         Console.WriteLine();
                         Console.Write("Source: ");
