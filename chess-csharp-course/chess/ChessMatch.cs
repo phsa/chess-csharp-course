@@ -14,6 +14,7 @@ namespace chess
         public Board Board { get; private set; }
         public Color CurrentPlayer { get; private set; }
         public int Turn { get; private set; }
+        public Piece EnPassantVulnerable { get; private set; }
         public bool InCheck { get; private set; }
         public bool Finished { get; private set; }
 
@@ -38,14 +39,14 @@ namespace chess
             InsertNewPiece('f', 1, new Bishop(Board, Color.White));
             InsertNewPiece('g', 1, new Knight(Board, Color.White));
             InsertNewPiece('h', 1, new Rook(Board, Color.White));
-            InsertNewPiece('a', 2, new Pawn(Board, Color.White));
-            InsertNewPiece('b', 2, new Pawn(Board, Color.White));
-            InsertNewPiece('c', 2, new Pawn(Board, Color.White));
-            InsertNewPiece('d', 2, new Pawn(Board, Color.White));
-            InsertNewPiece('e', 2, new Pawn(Board, Color.White));
-            InsertNewPiece('f', 2, new Pawn(Board, Color.White));
-            InsertNewPiece('g', 2, new Pawn(Board, Color.White));
-            InsertNewPiece('h', 2, new Pawn(Board, Color.White));
+            InsertNewPiece('a', 2, new Pawn(Board, Color.White, this));
+            InsertNewPiece('b', 2, new Pawn(Board, Color.White, this));
+            InsertNewPiece('c', 2, new Pawn(Board, Color.White, this));
+            InsertNewPiece('d', 2, new Pawn(Board, Color.White, this));
+            InsertNewPiece('e', 2, new Pawn(Board, Color.White, this));
+            InsertNewPiece('f', 2, new Pawn(Board, Color.White, this));
+            InsertNewPiece('g', 2, new Pawn(Board, Color.White, this));
+            InsertNewPiece('h', 2, new Pawn(Board, Color.White, this));
 
             InsertNewPiece('a', 8, new Rook(Board, Color.Black));
             InsertNewPiece('b', 8, new Knight(Board, Color.Black));
@@ -55,14 +56,14 @@ namespace chess
             InsertNewPiece('f', 8, new Bishop(Board, Color.Black));
             InsertNewPiece('g', 8, new Knight(Board, Color.Black));
             InsertNewPiece('h', 8, new Rook(Board, Color.Black));
-            InsertNewPiece('a', 7, new Pawn(Board, Color.Black));
-            InsertNewPiece('b', 7, new Pawn(Board, Color.Black));
-            InsertNewPiece('c', 7, new Pawn(Board, Color.Black));
-            InsertNewPiece('d', 7, new Pawn(Board, Color.Black));
-            InsertNewPiece('e', 7, new Pawn(Board, Color.Black));
-            InsertNewPiece('f', 7, new Pawn(Board, Color.Black));
-            InsertNewPiece('g', 7, new Pawn(Board, Color.Black));
-            InsertNewPiece('h', 7, new Pawn(Board, Color.Black));
+            InsertNewPiece('a', 7, new Pawn(Board, Color.Black, this));
+            InsertNewPiece('b', 7, new Pawn(Board, Color.Black, this));
+            InsertNewPiece('c', 7, new Pawn(Board, Color.Black, this));
+            InsertNewPiece('d', 7, new Pawn(Board, Color.Black, this));
+            InsertNewPiece('e', 7, new Pawn(Board, Color.Black, this));
+            InsertNewPiece('f', 7, new Pawn(Board, Color.Black, this));
+            InsertNewPiece('g', 7, new Pawn(Board, Color.Black, this));
+            InsertNewPiece('h', 7, new Pawn(Board, Color.Black, this));
         }
 
         public void InsertNewPiece(char column, int row, Piece newPiece)
@@ -111,7 +112,8 @@ namespace chess
 
             InCheck = IsInCheck(Oponente(CurrentPlayer));
 
-            if (Checkmating(Oponente(CurrentPlayer))) {
+            if (Checkmating(Oponente(CurrentPlayer)))
+            {
                 Finished = true;
             }
             else
@@ -120,6 +122,16 @@ namespace chess
                 ChangeCurrentPlayer();
             }
 
+            //#SPECIALMOVE: EN PASSANT
+            Piece movedPiece = Board.PieceAt(target);
+            if (movedPiece is Pawn && (target.Row == source.Row - 2 || target.Row == source.Row + 2))
+            {
+                EnPassantVulnerable = movedPiece;
+            }
+            else
+            {
+                EnPassantVulnerable = null;
+            }
         }
 
         public Piece MovePiece(Position source, Position target)
@@ -153,6 +165,15 @@ namespace chess
                 Board.InsertPiece(rook, newRookPos);
             }
 
+            // #SPECIALMOVE: EN PASSANT
+            if (movedPiece is Pawn && source.Column != target.Column && capturedPiece == null)
+            {
+                int shift = (movedPiece.Color == Color.White) ? 1 : -1;
+                Position toCapturePos = new Position(target.Row + shift, target.Column);
+                capturedPiece = Board.RemovePiece(toCapturePos);
+                _capturedPieces.Add(capturedPiece);
+            }
+
             return capturedPiece;
         }
 
@@ -166,7 +187,6 @@ namespace chess
                 _capturedPieces.Remove(capturedPiece);
             }
             Board.InsertPiece(restoredPiece, source);
-
 
 
             // #SPECIALMOVE: CASTLING SHORT
@@ -187,6 +207,15 @@ namespace chess
                 Piece rook = Board.RemovePiece(newRookPos);
                 rook.IncreaseMovementCount();
                 Board.InsertPiece(rook, originalRookPos);
+            }
+
+            // #SPECIALMOVE: EN PASSANT
+            if (restoredPiece is Pawn && source.Column != target.Column && capturedPiece == EnPassantVulnerable)
+            {
+                Piece pawn = Board.RemovePiece(target);
+                int captorOriginalRow = (restoredPiece.Color == Color.White) ? 3 : 4;
+                Position captorOriginalPos = new Position(captorOriginalRow, target.Column);
+                Board.InsertPiece(pawn, captorOriginalPos);
             }
         }
 
