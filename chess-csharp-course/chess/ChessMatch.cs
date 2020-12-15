@@ -103,12 +103,28 @@ namespace chess
         public void PerformMove(Position source, Position target)
         {
             Piece capturedPiece = MovePiece(source, target);
+            Piece movedPiece = Board.PieceAt(target);
 
             if (IsInCheck(CurrentPlayer))
             {
                 UndoMove(source, target, capturedPiece);
                 throw new BoardException("You can not put yourself in check!");
             }
+
+            //#SPECIALMOVE: PROMOTION
+            if (movedPiece is Pawn)
+            {
+                if ((movedPiece.Color == Color.White && target.Row == 0)
+                    || (movedPiece.Color == Color.Black && target.Row == Board.Rows))
+                {
+                    movedPiece = Board.RemovePiece(target);
+                    _pieces.Remove(movedPiece);
+                    Piece queen = new Queen(Board, movedPiece.Color);
+                    Board.InsertPiece(queen, target);
+                    _pieces.Add(queen);
+                }
+            }
+
 
             InCheck = IsInCheck(Oponente(CurrentPlayer));
 
@@ -123,7 +139,6 @@ namespace chess
             }
 
             //#SPECIALMOVE: EN PASSANT
-            Piece movedPiece = Board.PieceAt(target);
             if (movedPiece is Pawn && (target.Row == source.Row - 2 || target.Row == source.Row + 2))
             {
                 EnPassantVulnerable = movedPiece;
