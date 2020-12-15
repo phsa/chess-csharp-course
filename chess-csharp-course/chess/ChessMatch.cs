@@ -207,8 +207,8 @@ namespace chess
             // #SPECIALMOVE: CASTLING SHORT
             if (restoredPiece is King && target.Column == source.Column + 2)
             {
-                Position originalRookPos = new Position(source.Row, restoredPiece.Position.Column + 3);
-                Position newRookPos = new Position(source.Row, restoredPiece.Position.Column + 1);
+                Position originalRookPos = new Position(source.Row, source.Column + 3);
+                Position newRookPos = new Position(source.Row, source.Column + 1);
                 Piece rook = Board.RemovePiece(newRookPos);
                 rook.DecreaseMovementCount();
                 Board.InsertPiece(rook, originalRookPos);
@@ -217,8 +217,8 @@ namespace chess
             // #SPECIALMOVE: CASTLING LONG
             if (restoredPiece is King && target.Column == source.Column - 2)
             {
-                Position originalRookPos = new Position(source.Row, restoredPiece.Position.Column - 4);
-                Position newRookPos = new Position(source.Row, restoredPiece.Position.Column - 1);
+                Position originalRookPos = new Position(source.Row, source.Column - 4);
+                Position newRookPos = new Position(source.Row, source.Column - 1);
                 Piece rook = Board.RemovePiece(newRookPos);
                 rook.IncreaseMovementCount();
                 Board.InsertPiece(rook, originalRookPos);
