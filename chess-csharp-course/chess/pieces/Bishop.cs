@@ -49,7 +49,7 @@ namespace chess.pieces
                     break;
                 }
                 pos.Row++;
-                pos.Column++;
+                pos.Column--;
             }
 
             // LEFT-UP
